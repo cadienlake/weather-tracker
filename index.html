@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./assets/main.css"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.3/dayjs.min.js"
+        integrity="sha256-iu/zLUB+QgISXBLCW/mcDi/rnf4m4uEDO0wauy76x7U=" crossorigin="anonymous"></script>
+    <title>Weather Dashboard</title>
+</head>
+
+<body>
+    <!-- Header -->
+
+    <header class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 inset-x-0 top-0 p-3">
+        <h1 class="text-white text-2xl text-center font-bold">Weather Dashboard</h1>
+    </header>
+
+    <main class="grid grid-cols-12 gap-4 p-2">
+        <!-- City search -->
+        <div id="search-bar" class="border-2 rounded border-indigo-500 flex flex-col col-span-3 p-2">
+            <h2 class="text-lg font-bold">Search for a City:</h2>
+            <input id="search-input" type="text" class="border border-purple-500">
+            <button id="search-btn" class="bg-sky-500 hover:bg-sky-600 text-white mt-1 p-1">Search</button>
+            <!-- last 10 searches -->
+        </div>
+
+        <!-- current city -->
+        <div class="col-span-9 p-2">
+            <div id="city-card" class="border-2 rounded border-indigo-500 p-2">
+                <h2 id="current-city" class="text-xl font-bold pb-3">Current City</h2>
+                <p id="current-temp" class="pb-3">Temperature:</p>
+                <p id="current-wind" class="pb-3">Wind:</p>
+                <p id="current-humi" class="pb-3">Humidity:</p>
+            </div>
+
+            <!-- 5-day weather forecast -->
+            <div id="forecast-cards" class="pt-2">
+                <h3>5-Day Forecast</h3>
+            </div>
+        </div>
+    </main>
+</body>
+<script src="./assets/script.js"></script>
+
+</html>
