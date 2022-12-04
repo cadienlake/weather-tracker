@@ -1,40 +1,54 @@
 // GLOBAL VARIABLES
-// divs in HTML that we'll attach data to
-let searchBar = document.querySelector("#search-bar");
-let searchBtn = document.querySelector("#search-btn");
+let searchForm = document.querySelector("#search-form");
+let prevSearch = document.querySelector("#prev-search");
 let searchInput = document.querySelector("#search-input");
 let currentCity = document.querySelector("#current-city");
 let currentTemp = document.querySelector("#current-temp");
 let currentWind = document.querySelector("#current-wind");
 let currentHumi = document.querySelector("#current-humi");
 let forecastCards = document.querySelector("#forecast-cards");
+// API empty arrays
 let currentUrl = [];
 let fiveDayUrl = [];
+// DayJs
 let today = dayjs();
-let searchedCities = [];
+let searchedCities = JSON.parse(localStorage.getItem("cities")) || [];
 
 // FUNCTIONS
 function init() {
-  // Grab last search result from local storage
-  // and put them on left side of the page
-  //   ATTEMPT TO RECIEVE LOCAL STORAGE FAILURE SO FAR
-  //   let storedCities = localStorage.getItem("cities");
-  //   console.log(storedCities);
-  //   if (storedCities !== null) {
-  //     searchedCities = storedCities;
-  //   }
+  // loop through the cities saved in local storage and create buttons for them in the searchbar
+  searchedCities.forEach((city) => {
+    let cityBtn = document.createElement("button");
+    cityBtn.innerHTML += `${city}`;
+    cityBtn.setAttribute("data-city", city);
+    cityBtn.classList.add("bg-sky-400", "hover:bg-sky-500", "text-white", "mt-1");
+    // create a function to search for the city within the button clicked
+    prevSearch.append(cityBtn);
+  });
 }
-function search() {
+
+function search(event) {
+  event.preventDefault();
   // assign variable to value of text box on HTML page
-  let cityLogged = searchInput.value.trim();
+  let cityLogged = searchInput.value.trim() || event.target.getAttribute("data-city");
   let currentUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityLogged}&appid=0d0089143b24c1bb1408e815d3e61ea9&units=imperial`;
   if (cityLogged === "") {
     return;
   }
+  // Clear input after submitting
   searchInput.value = "";
-  //   HOW DO I PUSH TO THE SEARCHEDCITIES ARRAY WITHOUT RESETTING IT IN THIS FUNCTION?
-  localStorage.setItem("cities", cityLogged);
+  // Clear forecastCards HTML so that you're 5-Day resets when searching again rather than stacking.
+  forecastCards.innerHTML = "";
+  // check to see if the searched cities array includes the search input; if not, push the search into the array.
+  let containsCity = searchedCities.includes(cityLogged);
+  if (containsCity) {
+  } else {
+    searchedCities.push(cityLogged);
+  }
+  localStorage.setItem("cities", JSON.stringify(searchedCities.slice(-10)));
+  console.log(searchedCities);
   console.log(cityLogged);
+  // Begin to retrieve from API
   fetch(currentUrl)
     .then(function (response) {
       return response.json();
@@ -49,12 +63,23 @@ function search() {
       // Apply coordinates to the search for five day forecast (since One Call doesn't have a by city search smh)
       let fiveDayUrl = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=current,minutely,hourly,alerts&appid=0d0089143b24c1bb1408e815d3e61ea9&units=imperial`;
       console.log(icon);
+      // Place information from API into divs in the html for current weather
       //   WHY IS THE ICON ON A NEW LINE?
       currentCity.innerHTML = `${data.name} ${today.format("M/DD/YYYY")} <img src="./assets/icons/${icon}.png" class="w-12">`;
-      // temp, wind, and humidity
       currentTemp.innerHTML = `Temperature: ${data.main.temp}°F`;
       currentWind.innerHTML = `Wind: ${data.wind.speed}MPH`;
       currentHumi.innerHTML = `Humidity: ${data.main.humidity}%`;
+      // 5-DAY FORECAST
+
+      // SCOTTS WAY OF FINDING THE DAY FROM ORIGINAL API
+      // data.list.forEach(day => {
+      //   let midnight = day.dtext.split(" ")[1];
+      //   if (midnight === "00:00:00") {
+      //     console.log(day)
+      //   }
+      // });
+
+      // Retrieve data from a second URL for the five day forecast
       fetch(fiveDayUrl)
         .then(function (response) {
           return response.json();
@@ -62,6 +87,7 @@ function search() {
         .then(function (data) {
           console.log(data);
           let daily = data.daily;
+          // loop through the next five days, creating, styling, and filling elements on the HTML
           for (let i = 1; i < 6; i++) {
             let iconTwo = data.daily[i].weather[0].icon;
             let divEl = document.createElement("div");
@@ -83,7 +109,6 @@ function search() {
           }
         });
     });
-  // 5-DAY FORECAST
 }
 
 // FUNCTION CALLS
@@ -91,5 +116,6 @@ init();
 
 // EVENT LISTENERS
 // search button event listener
-searchBtn.addEventListener("click", search);
+searchForm.addEventListener("submit", search);
 // click on past search results (same as search button)
+prevSearch.addEventListener("click", search);

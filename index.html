@@ -23,12 +23,18 @@
         <!-- City search -->
         <div id="search-bar" class="border-2 rounded border-indigo-500 flex flex-col col-span-3 p-2">
             <h2 class="text-lg font-bold">Search for a City:</h2>
-            <input id="search-input" type="text" class="border border-purple-500">
-            <button id="search-btn" class="bg-sky-500 hover:bg-sky-600 text-white mt-1 p-1">Search</button>
+            <form id="search-form">
+                <input id="search-input" type="text" class="border border-purple-500 w-full">
+                <button id="search-btn" class="bg-sky-500 hover:bg-sky-600 text-white mt-1 p-1 w-full">Search</button>
+            </form>
+            <br>
             <!-- last 10 searches -->
+            <div id="prev-search" class="flex flex-col">
+                <h3 class="text-lg font-bold">Recent Searches:</h3>
+            </div>
         </div>
 
-        <!-- current city -->
+        <!-- CURRENT WEATHER -->
         <div class="col-span-9 p-2">
             <div id="city-card" class="border-2 rounded border-indigo-500 p-2">
                 <h2 id="current-city" class="text-xl font-bold pb-3">Current City</h2>
@@ -37,16 +43,11 @@
                 <p id="current-humi" class="pb-3">Humidity:</p>
             </div>
 
-            <!-- 5-day weather forecast -->
+            <!-- 5-DAY FORECAST -->
             <div>
                 <h3 class="text-lg font-bold">5-Day Forecast:</h3>
                 <div id="forecast-cards" class="pt-2 grid grid-cols-5 gap-3 p-2">
-                    <!-- <div id="day-one" class="border-2 rounded border-indigo-500 p-2">
-                    <h3 id="day-one-date" class="text-lg font-bold pb-3">Tomorrow</h2>
-                        <p id="day-one-temp" class="pb-3">Temperature:</p>
-                        <p id="day-one-wind" class="pb-3">Wind:</p>
-                        <p id="day-one-humi" class="pb-3">Humidity:</p>
-                </div> -->
+                    <!-- CONTENTS WILL BE FILLED VIA JAVASCRIPT -->
                 </div>
             </div>
         </div>
