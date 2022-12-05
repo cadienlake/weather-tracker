@@ -16,8 +16,23 @@ let searchedCities = JSON.parse(localStorage.getItem("cities")) || [];
 
 // FUNCTIONS
 function init() {
+  generateRecentSearches();
   // loop through the cities saved in local storage and create buttons for them in the searchbar
-  searchedCities.forEach((city) => {
+  // searchedCities.forEach((city) => {
+  //   let cityBtn = document.createElement("button");
+  //   cityBtn.innerHTML += `${city}`;
+  //   cityBtn.setAttribute("data-city", city);
+  //   cityBtn.classList.add("bg-sky-400", "hover:bg-sky-500", "text-white", "mt-1");
+  //   // create a function to search for the city within the button clicked
+  //   prevSearch.append(cityBtn);
+  // });
+}
+
+function generateRecentSearches() {
+  // Reset buttons so that you don't add a second set of buttons when you search without reloading
+  prevSearch.innerHTML = "";
+  // ensure only the last ten stored searches are made into buttons
+  searchedCities.slice(-10).forEach((city) => {
     let cityBtn = document.createElement("button");
     cityBtn.innerHTML += `${city}`;
     cityBtn.setAttribute("data-city", city);
@@ -39,19 +54,29 @@ function search(event) {
   searchInput.value = "";
   // Clear forecastCards HTML so that you're 5-Day resets when searching again rather than stacking.
   forecastCards.innerHTML = "";
-  // check to see if the searched cities array includes the search input; if not, push the search into the array.
-  let containsCity = searchedCities.includes(cityLogged);
-  if (containsCity) {
-  } else {
-    searchedCities.push(cityLogged);
-  }
-  localStorage.setItem("cities", JSON.stringify(searchedCities.slice(-10)));
-  console.log(searchedCities);
-  console.log(cityLogged);
   // Begin to retrieve from API
   fetch(currentUrl)
     .then(function (response) {
-      return response.json();
+      // If entry not found in API, do not proceed. Otherwise, log search to local storage and proceed.
+      if (response.status === 404) {
+        // Display an error message
+        currentCity.innerHTML = "Error: No results found.";
+        currentTemp.innerHTML = "";
+        currentWind.innerHTML = "";
+        currentHumi.innerHTML = "";
+      } else {
+        // Prevent doubles in recent searches:
+        // checks to see if the searched cities array already includes the search input; if not, push the search into the array.
+        let containsCity = searchedCities.includes(cityLogged);
+        if (containsCity) {
+        } else {
+          searchedCities.push(cityLogged);
+        }
+        localStorage.setItem("cities", JSON.stringify(searchedCities.slice(-10)));
+        console.log(searchedCities);
+        console.log(cityLogged);
+        return response.json();
+      }
     })
     .then(function (data) {
       console.log(data);
@@ -71,9 +96,9 @@ function search(event) {
       currentHumi.innerHTML = `Humidity: ${data.main.humidity}%`;
       // 5-DAY FORECAST
 
-      // SCOTTS WAY OF FINDING THE DAY FROM ORIGINAL API
+      // SCOTT'S WAY OF FINDING THE DAY FROM ORIGINAL API
       // data.list.forEach(day => {
-      //   let midnight = day.dtext.split(" ")[1];
+      //   let midnight = day.dtext.split(" ")[1];`
       //   if (midnight === "00:00:00") {
       //     console.log(day)
       //   }
@@ -108,6 +133,8 @@ function search(event) {
             forecastCards.append(divEl);
           }
         });
+      // Regenerate the recent searches to accound for what was just entered.
+      generateRecentSearches();
     });
 }
 
